@@ -1,14 +1,14 @@
-package Ex2.src;
+package api;
 
 
-public class My_EdgeDataImpl implements api.EdgeData {
+public class My_EdgeDataImpl implements EdgeData {
 
 
     private int Src;
     private int Dest;
     private double Weight;
-    private String Info;
-    private int tag;
+    private String Info = "";
+    private int tag = 0;
 
     public My_EdgeDataImpl(int Srcc , int Destt , double Weightt ,String Infoo , int tagg) {
         this.Src=Srcc;
@@ -18,7 +18,7 @@ public class My_EdgeDataImpl implements api.EdgeData {
         this.Info=Infoo;
     }
 
-    public void My_EdgeDataImpl(api.EdgeData a){
+    public void My_EdgeDataImpl(EdgeData a){
        this.Src=a.getSrc();
        this.Dest=a.getDest();
        this.Info=a.getInfo();
@@ -26,6 +26,11 @@ public class My_EdgeDataImpl implements api.EdgeData {
        this.Weight=a.getWeight();
     }
 
+    public My_EdgeDataImpl(int Srcc, int Destt, double Weightt){
+        this.Src = Srcc;
+        this.Dest = Destt;
+        this.Weight = Weightt;
+    }
 
     public int getSrc() {
         return this.Src;
