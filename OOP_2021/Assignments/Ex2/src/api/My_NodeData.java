@@ -1,10 +1,10 @@
 package api;
 
 public class My_NodeData implements NodeData {
-    private int key, tag;
+    private int key, tag = 0;
     private GeoLocation location;
-    private double weight;
-    private String info;
+    private double weight = 1;
+    private String info = "";
 
     public My_NodeData(int key, GeoLocation location, double weight, String info, int tag){
         this.key = key;
@@ -21,6 +21,12 @@ public class My_NodeData implements NodeData {
         this.info = other.getInfo();
         this.tag = other.getTag();
     }
+
+    public My_NodeData(int key, GeoLocation location){
+        this.key = key;
+        this.location = new My_GeoLocation(location);
+    }
+
     @Override
     public int getKey() {
         return this.key;
