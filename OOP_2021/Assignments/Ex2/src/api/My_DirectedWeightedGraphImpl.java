@@ -5,16 +5,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
-    private int Edgecount=0,mc=0;
-    private boolean NodeIter=false, EdgeIter = false;
-    private HashMap <Integer,NodeData> Nodes = new HashMap<Integer, NodeData>();
+    private int Edgecount,mc;
+    private boolean NodeIter, EdgeIter;
+    private HashMap <Integer,NodeData> Nodes ;
     /*for the edges we created two hashmaps of hashmaps, the Edgesrc hashmap's keys are the sources of the edges and
     the values are hashmaps that their keys are the destinations of the edges coming out of the src key and their values
     are the edges data. the Edgedest hashmap is the opposite.
      */
-    private HashMap <Integer,HashMap<Integer,EdgeData>> Edgesrc = new HashMap<Integer,HashMap<Integer, EdgeData>>();
-    private HashMap <Integer,HashMap<Integer,EdgeData>> Edgedest = new HashMap<Integer,HashMap<Integer, EdgeData>>();
-    private HashMap <String, EdgeData> Edges = new HashMap<String,EdgeData>();
+    private HashMap <Integer,HashMap<Integer,EdgeData>> Edgesrc ;
+    private HashMap <Integer,HashMap<Integer,EdgeData>> Edgedest ;
+    private HashMap <String, EdgeData> Edges ;
 
     public My_DirectedWeightedGraphImpl(My_DirectedWeightedGraphImpl a )
     {
@@ -25,6 +25,18 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         this.Nodes=a.getNodes();
         this.Edges = a.getEdges();
     }
+    public My_DirectedWeightedGraphImpl()
+    {
+        this.mc=0;
+        this.Edgecount=0;
+        this.NodeIter=false;
+        this.EdgeIter=false;
+        this.Nodes= new HashMap<Integer, NodeData>();
+        this.Edgesrc= new HashMap<Integer,HashMap<Integer, EdgeData>>();
+        this.Edgedest= new HashMap<Integer,HashMap<Integer, EdgeData>>();
+        this.Edges=new HashMap<String,EdgeData>();
+    }
+
     public  HashMap<Integer,NodeData> getNodes()
     {
         return this.Nodes;
@@ -68,7 +80,7 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
 
     @Override
     public void connect(int src, int dest, double w) {
-        if(NodeIter) {
+        if(NodeIter||!Nodes.containsKey(src)||!Nodes.containsKey(dest)) {
             throw new RuntimeException();
         }
         EdgeData e = new My_EdgeDataImpl(src,dest,w);
@@ -86,7 +98,7 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         {
             HashMap<Integer,EdgeData> p = new HashMap<Integer,EdgeData>();
             p.put(src,e);
-            Edgedest.put(src,p);
+            Edgedest.put(dest,p);
         }
         Edges.put(""+src+","+dest+"",e);
         this.Edgecount++;
@@ -119,29 +131,35 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         if(NodeIter){
             throw new RuntimeException();
         }
-        if(!Nodes.containsKey(key)){
+        if(!Nodes.containsKey(key)) {
             return null;
         }
         NodeData n = getNode(key);
         this.Nodes.remove(key);
         //remove all the edges that come out of key node
-        Set<Integer> dests = Edgesrc.get(key).keySet();
-        Iterator<Integer> it = dests.iterator();
-        while(it.hasNext()){
-            Edges.remove(""+key+","+it.next()+"");
-            Edgedest.get(it.next()).remove(key);
-            Edgecount--;
+        if(Edgesrc.containsKey(key)) {
+            Set<Integer> dests = Edgesrc.get(key).keySet();
+            Iterator<Integer> it = dests.iterator();
+            while (it.hasNext()) {
+                Integer temp = it.next();
+                Edges.remove("" + key + "," + temp + "");
+                Edgedest.get(temp).remove(key);
+                Edgecount--;
+            }
+            Edgesrc.remove(key);
         }
-        Edgesrc.remove(key);
         //remove all the edges that go into key node
-        Set<Integer> srcs = Edgedest.get(key).keySet();
-        it = srcs.iterator();
-        while(it.hasNext()){
-            Edges.remove(""+it.next()+","+key+"");
-            Edgesrc.get(it.next()).remove(key);
-            Edgecount--;
+        if(Edgedest.containsKey(key)) {
+            Set<Integer> srcs = Edgedest.get(key).keySet();
+            Iterator<Integer> it = srcs.iterator();
+            while (it.hasNext()) {
+                Integer temp = it.next();
+                Edges.remove("" + temp + "," + key + "");
+                Edgesrc.get(temp).remove(key);
+                Edgecount--;
+            }
+            Edgedest.remove(key);
         }
-        Edgedest.remove(key);
         this.mc++;
         return n;
     }
@@ -151,12 +169,15 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         if(!Edgesrc.containsKey(src)){
             return null;
         }
+        if(!Edgedest.containsKey(dest)){
+            return null;
+        }
         if(NodeIter){
             throw new RuntimeException();
         }
         EdgeData e = getEdge(src, dest);
         this.Edgesrc.get(src).remove(dest);
-        this.Edgesrc.get(dest).remove(src);
+        this.Edgedest.get(dest).remove(src);
         this.Edges.remove(""+src+","+dest+"");
         this.Edgecount--;
         this.mc++;
