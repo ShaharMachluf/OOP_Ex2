@@ -30,13 +30,13 @@ class My_DirectedWeightedGraphTest {
 
     @Test
     void getEdge() {
-
+        test.addNode(n0);
+        test.addNode(n1);
         My_EdgeDataImpl x = new My_EdgeDataImpl(0,1,0.8);
         test.connect(0,1,0.8);
         assertEquals(test.getEdge(0,1).getDest(),x.getDest());
         assertEquals(test.getEdge(0,1).getSrc(),x.getSrc());
         assertEquals(test.getEdge(0,1).getWeight(),x.getWeight());
-
     }
 
     @Test
