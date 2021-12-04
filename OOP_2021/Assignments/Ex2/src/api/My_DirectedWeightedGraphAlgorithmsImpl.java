@@ -56,20 +56,48 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
 
     @Override
     public boolean save(String file) {
-       try {
-           Gson gson = new Gson();
-           gson.toJson(new FileWriter(file));
-           return false;
-       }
-       catch (Exception a)
-       {
-
-       }
-
+        try {
+            Gson gson = new Gson();
+            Writer writer = new FileWriter(file);
+            gson.toJson(this.Graph, writer);
+            writer.close();
+            return true;
+        }
+        catch (Exception a)
+        {
+            return false;
+        }
     }
 
     @Override
     public boolean load(String file) {
-        return false;
+        try {
+            Gson gson = new Gson();
+            FileReader reader =new FileReader(file);
+            HashMap<String, List<HashMap>> h = gson.fromJson(reader, HashMap.class);
+            List <HashMap> nodes = h.get("Nodes");
+            Iterator <HashMap> it = nodes.iterator();
+            while(it.hasNext()){
+                HashMap n = it.next();
+                int key = Integer.parseInt((String) n.get("id"));
+                String[] location = ((String)n.get("pos")).split(",");
+                GeoLocation g = new My_GeoLocation(Double.parseDouble(location[0]), Double.parseDouble(location[1]), Double.parseDouble(location[2]));
+                Graph.addNode(new My_NodeData(key, g));
+            }
+            List <HashMap> edges = h.get("Edges");
+            it = edges.iterator();
+            while(it.hasNext()){
+                HashMap e = it.next();
+                int src = Integer.parseInt((String) e.get("src"));
+                int dest = Integer.parseInt((String) e.get("dest"));
+                double weight = Double.parseDouble((String) e.get("w"));
+                Graph.connect(src, dest, weight);
+            }
+            reader.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
