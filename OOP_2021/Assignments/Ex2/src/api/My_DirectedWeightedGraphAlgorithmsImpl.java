@@ -209,37 +209,35 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         return ans;
     }
 
-    private void swap(NodeData [] a , int i , int k )
+    private void swap(int [] a , int i , int k )
     {
-        NodeData Temp = a[i];
+        int Temp = a[i];
         a[i] = a[k];
         a[k] = Temp;
 
     }
-    private NodeData[] Permutations(int k ,NodeData [] a)
+    //heap's algorithm
+    private void Permutations(ArrayList<int[]> ans, int [] a, int k)
     {
-
         if(k==1)
-            return a;
+            ans.add(a) ;
         else{
-            Permutations(k-1,a);
+            k=k-1;
+            Permutations(ans, a, k);
 
-            for(int i=0 ; i< k-1;i++)
+            for(int i=0 ; i< k;i++)
             {
                 if(k%2==0)
                 {
-                    swap(a,i,k-1);
+                    swap(a,i,k);
                 }
                 else
                 {
-                    swap(a,0,k-1);
+                    swap(a,0,k);
                 }
-                Permutations(k-1,a);
+                Permutations(ans, a, k);
             }
-
         }
-
-        return a;
     }
 
     @Override
@@ -247,7 +245,7 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         int size = cities.size();
         double [] [] arr = new double[size][size];
 
-
+        //save all shortest paths between every two nodes in a matrix
         for(int i = 0 ; i < size ; i++) {
             for (int j = 0; j < size; j++) {
                 if (i == j)
@@ -255,20 +253,38 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
                 arr[i][j] = shortestPathDist(cities.get(i).getKey(), cities.get(j).getKey());
             }
         }
-        double shortest= Double.MAX_VALUE;
-        NodeData [] ans = new NodeData[cities.size()];
-        NodeData [] Per = new NodeData[cities.size()];
+        double shortest= Double.MAX_VALUE, curr=0;
+        int [] ans = new int[cities.size()];
+        int [] Per = new int[cities.size()];
+        ArrayList <int[]> permuted= new ArrayList<>();
+        //init both arrays to be the indexes of the original list
         for(int i = 0 ;i < cities.size();i++ )
         {
-            ans[i]=cities.get(i);
-            Per[i]=cities.get(i);
+            ans[i]=i;
+            Per[i]=i;
         }
-        for(int i=0;i < cities.size() ; i++)
+        //save all the permutaions of the array per into permuted list
+        Permutations(permuted,Per,Per.length);
+        //go over al the permuted arrays
+        for(int i=0;i < permuted.size() ; i++)
         {
-            for(int j= 0 ; j < cities.size() ; j++)
-
+            Per=permuted.get(i);
+            //compute the path dist between all of the nodes in the array
+            for(int j= 0 ; j < cities.size()-1 ; j++){
+                curr+=arr[Per[j]][Per[j+1]];
+            }
+            //check if the current array generated the shortest path
+            if(curr<shortest){
+                shortest=curr;
+                ans=Per;
+            }
         }
-        return null;
+        List<NodeData> end = new ArrayList<>();
+        //put all the elements from the ans array (and the nodes we need to go through between them) to the end list
+        for (int i=0;i<ans.length-1;i++){
+            end.addAll(shortestPath(ans[i],ans[i+1]));
+        }
+        return end;
     }
 
 
