@@ -42,7 +42,7 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         return new My_DirectedWeightedGraphImpl(this.Graph);
     }
 
-        @Override
+    @Override
     public boolean isConnected() {
         DirectedWeightedGraph GTranspose = new My_DirectedWeightedGraphImpl(Graph.getNodes(), Graph.getEdgedest(), Graph.getEdgesrc(), Graph.getEdges());
         NodeData start = Graph.nodeIter().next();
@@ -209,10 +209,68 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         return ans;
     }
 
+    private void swap(NodeData [] a , int i , int k )
+    {
+        NodeData Temp = a[i];
+        a[i] = a[k];
+        a[k] = Temp;
+
+    }
+    private NodeData[] Permutations(int k ,NodeData [] a)
+    {
+
+        if(k==1)
+            return a;
+        else{
+            Permutations(k-1,a);
+
+            for(int i=0 ; i< k-1;i++)
+            {
+                if(k%2==0)
+                {
+                    swap(a,i,k-1);
+                }
+                else
+                {
+                    swap(a,0,k-1);
+                }
+                Permutations(k-1,a);
+            }
+
+        }
+
+        return a;
+    }
+
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
+        int size = cities.size();
+        double [] [] arr = new double[size][size];
+
+
+        for(int i = 0 ; i < size ; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i == j)
+                    arr[i][i] = Double.MAX_VALUE;
+                arr[i][j] = shortestPathDist(cities.get(i).getKey(), cities.get(j).getKey());
+            }
+        }
+        double shortest= Double.MAX_VALUE;
+        NodeData [] ans = new NodeData[cities.size()];
+        NodeData [] Per = new NodeData[cities.size()];
+        for(int i = 0 ;i < cities.size();i++ )
+        {
+            ans[i]=cities.get(i);
+            Per[i]=cities.get(i);
+        }
+        for(int i=0;i < cities.size() ; i++)
+        {
+            for(int j= 0 ; j < cities.size() ; j++)
+
+        }
         return null;
     }
+
 
     @Override
     public boolean save(String file) {
