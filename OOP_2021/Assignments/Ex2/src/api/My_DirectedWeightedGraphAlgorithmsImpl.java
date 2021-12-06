@@ -303,28 +303,28 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         }
     }
 
-    @Override
+     @Override
     public boolean load(String file) {
         try {
             Gson gson = new Gson();
             FileReader reader =new FileReader(file);
-            HashMap<String, List<HashMap>> h = gson.fromJson(reader, HashMap.class);
-            List <HashMap> nodes = h.get("Nodes");
-            Iterator <HashMap> it = nodes.iterator();
-            while(it.hasNext()){
-                HashMap n = it.next();
-                int key = Integer.parseInt((String) n.get("id"));
-                String[] location = ((String)n.get("pos")).split(",");
+            JsonElement h = gson.fromJson(reader, JsonElement.class);
+            JsonObject j = h.getAsJsonObject();
+            JsonArray nodes = j.get("Nodes").getAsJsonArray();
+            for(int i=0;i< nodes.size();i++){
+                JsonObject nodeObj = nodes.get(i).getAsJsonObject();
+                int key = nodeObj.get("id").getAsInt();
+                String loc = nodeObj.get("pos").getAsString();
+                String[] location = loc.split(",");
                 GeoLocation g = new My_GeoLocation(Double.parseDouble(location[0]), Double.parseDouble(location[1]), Double.parseDouble(location[2]));
                 Graph.addNode(new My_NodeData(key, g));
             }
-            List <HashMap> edges = h.get("Edges");
-            it = edges.iterator();
-            while(it.hasNext()){
-                HashMap e = it.next();
-                int src = Integer.parseInt((String) e.get("src"));
-                int dest = Integer.parseInt((String) e.get("dest"));
-                double weight = Double.parseDouble((String) e.get("w"));
+            JsonArray edges = j.get("Edges").getAsJsonArray();
+            for(int i=0;i< edges.size();i++){
+                JsonObject edgeOb=edges.get(i).getAsJsonObject();
+                int src = edgeOb.get("src").getAsInt();
+                int dest = edgeOb.get("dest").getAsInt();
+                double weight = edgeOb.get("w").getAsDouble();
                 Graph.connect(src, dest, weight);
             }
             reader.close();
