@@ -36,6 +36,14 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         this.Edgedest= new HashMap<Integer,HashMap<Integer, EdgeData>>();
         this.Edges=new HashMap<String,EdgeData>();
     }
+    
+    public My_DirectedWeightedGraphImpl(HashMap nodes2, HashMap edgesrc, HashMap edgedest, HashMap edges2){
+        this.Nodes = nodes2;
+        this.Edgesrc = edgesrc;
+        this.Edgedest = edgedest;
+        this.Edges = edges2;
+        this.Edgecount = Edges.size();
+    }
 
     public  HashMap<Integer,NodeData> getNodes()
     {
