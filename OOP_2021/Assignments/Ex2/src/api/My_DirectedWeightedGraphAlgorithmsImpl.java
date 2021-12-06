@@ -20,7 +20,16 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
 
     @Override
     public void init(DirectedWeightedGraph g) {
-        this.Graph=(My_DirectedWeightedGraphImpl) g;
+        this.Graph=new My_DirectedWeightedGraphImpl();
+        Iterator <NodeData> itn = g.nodeIter();
+        while(itn.hasNext()){
+            this.Graph.addNode(itn.next());
+        }
+        Iterator <EdgeData> ite = g.edgeIter();
+        while(ite.hasNext()){
+            EdgeData e = ite.next();
+            this.Graph.connect(e.getSrc(), e.getDest(), e.getWeight());
+        }
     }
 
     @Override
