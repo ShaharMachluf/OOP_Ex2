@@ -77,6 +77,9 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
 
     @Override
     public double shortestPathDist(int src, int dest) {
+        if(src == dest){
+            return 0;
+        }
         List<NodeData> l = shortestPath(src,dest);
         if(l == null){
             return -1;
