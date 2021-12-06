@@ -88,7 +88,7 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
 
     @Override
     public void connect(int src, int dest, double w) {
-        if(NodeIter||!Nodes.containsKey(src)||!Nodes.containsKey(dest)) {
+        if(NodeIter||!Nodes.containsKey(src)||!Nodes.containsKey(dest)||src == dest) {
             throw new RuntimeException();
         }
         EdgeData e = new My_EdgeDataImpl(src,dest,w);
