@@ -100,11 +100,15 @@ class My_DirectedWeightedGraphAlgorithmsImplTest {
     @Test
     void shortestPathDist() {
     }
-
-    @Test
+ @Test
     void shortestPath() {
+        test.load("C:/Users/shaim/IdeaProjects/OOP_Ex2/OOP_2021/Assignments/Ex2/data/G1.json");
+        NodeData ans = test.getGraph().getNode(2);
+        List <NodeData> a = test.shortestPath(2,3);
+        assertEquals(ans.getKey(),a.get(0).getKey());
+        ans =test.getGraph().getNode(3);
+        assertEquals(ans.getKey(),a.get(1).getKey());
     }
-
     @Test
     void center() {
     }
@@ -113,15 +117,18 @@ class My_DirectedWeightedGraphAlgorithmsImplTest {
     void tsp() {
     }
 
-    @Test
+     @Test
     void save() {
+        test.load("C:/Users/shaim/IdeaProjects/OOP_Ex2/OOP_2021/Assignments/Ex2/data/G1.json");
+        test.getGraph().removeEdge(16,0);
+        test.save("C:/Users/shaim/IdeaProjects/OOP_Ex2/OOP_2021/Assignments/Ex2/data/G.json");
 
     }
 
     @Test
     void load() {
-        My_DirectedWeightedGraphAlgorithmsImpl lol =new My_DirectedWeightedGraphAlgorithmsImpl();
-        lol.load("C:/Users/shaim/IdeaProjects/OOP_Ex2/OOP_2021/Assignments/Ex2/data/G1.json");
-        assertNotNull(lol.getGraph());
+        test.load("C:/Users/shaim/IdeaProjects/OOP_Ex2/OOP_2021/Assignments/Ex2/data/G1.json");
+        assertNotNull(test.getGraph());
+        assertEquals(test.getGraph().getEdge(0,16).getWeight(),1.3118716362419698);
     }
 }
