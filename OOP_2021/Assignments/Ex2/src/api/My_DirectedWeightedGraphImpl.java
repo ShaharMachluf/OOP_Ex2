@@ -1,12 +1,13 @@
 package api;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
-    private int Edgecount,mc;
-    private boolean NodeIter, EdgeIter;
+    private int Edgecount ,mc = 0;
+    private boolean NodeIter = false, EdgeIter = false;
     private HashMap <Integer,NodeData> Nodes ;
     /*for the edges we created two hashmaps of hashmaps, the Edgesrc hashmap's keys are the sources of the edges and
     the values are hashmaps that their keys are the destinations of the edges coming out of the src key and their values
@@ -36,14 +37,6 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
         this.Edgedest= new HashMap<Integer,HashMap<Integer, EdgeData>>();
         this.Edges=new HashMap<String,EdgeData>();
     }
-    
-    public My_DirectedWeightedGraphImpl(HashMap nodes2, HashMap edgesrc, HashMap edgedest, HashMap edges2){
-        this.Nodes = nodes2;
-        this.Edgesrc = edgesrc;
-        this.Edgedest = edgedest;
-        this.Edges = edges2;
-        this.Edgecount = Edges.size();
-    }
 
     public  HashMap<Integer,NodeData> getNodes()
     {
@@ -65,6 +58,7 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
     {
         return this.Edgesrc;
     }
+
 
     @Override
     public NodeData getNode(int key) {
@@ -115,6 +109,9 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
 
     @Override
     public Iterator<NodeData> nodeIter() {
+        if(Nodes.isEmpty()){
+            return null;
+        }
         Iterator<NodeData> iter = Nodes.values().iterator();
         this.NodeIter = true;
         return iter;
@@ -122,6 +119,9 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
 
     @Override
     public Iterator<EdgeData> edgeIter() {
+        if(Edges.isEmpty()){
+            return null;
+        }
         Iterator<EdgeData> iter = Edges.values().iterator();
         this.EdgeIter = true;
         return iter;
@@ -129,7 +129,11 @@ public class My_DirectedWeightedGraphImpl implements DirectedWeightedGraph {
 
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        Iterator<EdgeData> iter = Edgesrc.get(node_id).values().iterator();
+        if(!this.Edgesrc.containsKey(node_id)){
+            return null;
+        }
+        Collection <EdgeData> c = Edgesrc.get(node_id).values();
+        Iterator<EdgeData> iter = c.iterator();
         this.EdgeIter = true;
         return iter;
     }
