@@ -44,7 +44,16 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
 
     @Override
     public boolean isConnected() {
-        DirectedWeightedGraph GTranspose = new My_DirectedWeightedGraphImpl(Graph.getNodes(), Graph.getEdgedest(), Graph.getEdgesrc(), Graph.getEdges());
+        DirectedWeightedGraph GTranspose = new My_DirectedWeightedGraphImpl();
+        Iterator <NodeData> itn = Graph.nodeIter();
+        while(itn.hasNext()){
+            GTranspose.addNode(itn.next());
+        }
+        Iterator <EdgeData> ite = Graph.edgeIter();
+        while(ite.hasNext()){
+            EdgeData e = ite.next();
+            GTranspose.connect(e.getDest(),e.getSrc(),e.getWeight());
+        }
         NodeData start = Graph.nodeIter().next();
         if(dfs(Graph, start) < Graph.nodeSize()){
             return false;
@@ -66,10 +75,13 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         n.setTag(1);
         count++;
         Iterator<EdgeData> it = G.edgeIter(n.getKey());
+        if(it == null){
+            return count;
+        }
         while(it.hasNext()){
             NodeData n2 = G.getNode(it.next().getDest());
             if(n2.getTag() == 0){
-                dfs_visit(count, n2, G);
+                count = dfs_visit(count, n2, G);
             }
         }
         return count;
