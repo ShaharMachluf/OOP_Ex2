@@ -86,106 +86,49 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         }
         return count;
     }
-
-    @Override
-    public double shortestPathDist(int src, int dest) {
-        if(src == dest){
-            return 0;
-        }
-        List<NodeData> l = shortestPath(src,dest);
-        if(l == null){
-            return -1;
-        }
-        double pathSize = 0;
-        Iterator <NodeData> itSrc= l.listIterator();
-        Iterator <NodeData> itDest= l.listIterator();
-        itDest.next();
-        while(itDest.hasNext()){
-            EdgeData e =Graph.getEdge(itSrc.next().getKey(), itDest.next().getKey());
-            pathSize += e.getWeight();
-        }
-        return pathSize;
-    }
-
-    @Override
-    public List<NodeData> shortestPath(int src, int dest) {//inspired by stackbuse.com/graphs-in-java-dijkstras-algorithms/
-        List <NodeData> pathList = new ArrayList<>();
-        int parent = Integer.MAX_VALUE;
-        HashMap<Integer,Integer> changed = new HashMap<>();
-        changed.put(src,null);
-        HashMap<Integer,Double> shortestPathMap = new HashMap<>();
-        Iterator <NodeData> it = Graph.nodeIter();
-        while(it.hasNext()){
-            NodeData n =it.next();
-            if(n.getKey() == src){
-                shortestPathMap.put(src,0.0);
-            }else{
-                shortestPathMap.put(n.getKey(),Double.POSITIVE_INFINITY);
+        public int check(double arr[][] ,int i ,int k, double x )
+        {
+            for(int j=0;j<this.Graph.nodeSize();j++){
+                if(this.Graph.getEdge(j,k)==null)
+                    continue;;
+                if(this.Graph.getEdge(j,k).getWeight()+arr[i][j]==x)
+                    return j;
             }
+            return arr.length-1;
         }
-        Iterator <EdgeData> itE = Graph.edgeIter(src);
-        while(itE.hasNext()){
-            EdgeData e = itE.next();
-            shortestPathMap.put(e.getDest(),e.getWeight());
-            changed.put(e.getDest(),src);
+        public  List<NodeData> getShortestPathTo(int src,int dest) {
+        int size = this.Graph.nodeSize();
+        double [] [] ans = new double[size][size];
+        for(int i = 0 ; i < size ; i ++){
+                for(int j=0 ; j < size ; j++){
+                    if(i==0||i==j || this.getGraph().getEdge(i,j)==null)
+                    ans[i][j]=Double.MAX_VALUE;
+                    else
+                    ans[i][j]=this.getGraph().getEdge(i,j).getWeight();
+                }
+
         }
-        Graph.getNode(src).setTag(1);//visited
-        while(true){
-            NodeData currNode = closestReachableUnvisited(shortestPathMap);
-            if(currNode == null){
-                return null;
-            }
-            if(currNode.getKey() == dest) {
-                int child = dest;
-                pathList.add(0,Graph.getNode(dest));
-                while (true) {
-                    parent = changed.get(child);
-                    if(parent == Integer.MAX_VALUE){
-                        break;
+            for(int k = 0; k<size ; k++) {
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        if(ans[i][j]>ans[i][k]+ans[k][j])
+                            ans[i][j]=ans[i][k]+ans[k][j];
                     }
-                    pathList.add(0,Graph.getNode(parent));
-                    child = parent;
-                }
-                pathList.add(0,Graph.getNode(src));
-                return pathList;
-            }
-            currNode.setTag(1);
-            Iterator <EdgeData> itEdges = Graph.edgeIter(currNode.getKey());
-            while(itEdges.hasNext()){
-                EdgeData e = itEdges.next();
-                if(Graph.getNode(e.getDest()).getTag() == 1){
-                    continue;
-                }
-                if(shortestPathMap.get(currNode.getKey()) + e.getWeight() < shortestPathMap.get(e.getDest())){
-                    shortestPathMap.put(e.getDest(), shortestPathMap.get(currNode.getKey())+e.getWeight());
-                    changed.put(e.getDest(), currNode.getKey());
-                }
-            }
-        }
-    }
 
-    private NodeData closestReachableUnvisited(HashMap<Integer,Double> ShortestPathMap){
-        double shortestDist = Double.POSITIVE_INFINITY;
-        NodeData closestReachableNode = null;
-        Iterator <NodeData> it = Graph.nodeIter();
-        while(it.hasNext()){
-            NodeData n = it.next();
-            if(n.getTag() == 1){
-                continue;
+                }
             }
-            double currDist = ShortestPathMap.get(n.getKey());
-            if(currDist == Double.POSITIVE_INFINITY){
-                continue;
-            }
-            if(currDist < shortestDist){
-                shortestDist = currDist;
-                closestReachableNode = n;
-            }
-        }
-        return closestReachableNode;
-    }
+            List <NodeData> result = new LinkedList<>();
 
-    @Override
+            int temp = dest;
+                    for(int i = size-1 ; i > 0 ; i--){
+                        if(ans[i][temp]!=ans[i-1][temp])
+                            temp = check(ans,i,temp,ans[i][temp]);
+                            result.add(this.Graph.getNode(temp));
+                        }
+                    Collections.reverse(result);
+           return result;
+
+    }    @Override
     public NodeData center() {
         int size = this.Graph.getNodes().size();
         double min =  Double.MAX_VALUE;
