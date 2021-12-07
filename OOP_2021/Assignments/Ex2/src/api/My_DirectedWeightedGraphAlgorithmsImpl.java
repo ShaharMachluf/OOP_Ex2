@@ -128,6 +128,31 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
                     Collections.reverse(result);
            return result;
 
+    @Override
+    public double shortestPathDist(int src, int dest) {
+        if(src == dest){
+            return 0;
+        }
+        List<NodeData> l = shortestPath(src,dest);
+        if(l == null){
+            return -1;
+        }
+        double pathSize = 0;
+        Iterator <NodeData> itSrc= l.listIterator();
+        Iterator <NodeData> itDest= l.listIterator();
+        itDest.next();
+        while(itDest.hasNext()){
+            EdgeData e =Graph.getEdge(itSrc.next().getKey(), itDest.next().getKey());
+            pathSize += e.getWeight();
+        }
+        return pathSize;
+    }
+
+    @Override
+    public List<NodeData> shortestPath(int src, int dest) {//inspired by stackbuse.com/graphs-in-java-dijkstras-algorithms/
+      return getShortestPathTo(src,dest);
+    }
+
     }    @Override
     public NodeData center() {
         int size = this.Graph.getNodes().size();
