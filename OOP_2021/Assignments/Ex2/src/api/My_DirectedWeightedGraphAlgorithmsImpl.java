@@ -260,65 +260,71 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
         int size = cities.size();
-        double [] [] arr = new double[size][size];
+        if(size < 40) {
+            double[][] arr = new double[size][size];
 
-        //save all shortest paths between every two nodes in a matrix
-        for(int i = 0 ; i < size ; i++) {
-            for (int j = 0; j < size; j++) {
-                if (i == j)
-                    arr[i][i] = Double.MAX_VALUE;
-                arr[i][j] = shortestPathDist(cities.get(i).getKey(), cities.get(j).getKey());
+            //save all shortest paths between every two nodes in a matrix
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (i == j)
+                        arr[i][i] = Double.MAX_VALUE;
+                    else {
+                        arr[i][j] = shortestPathDist(cities.get(i).getKey(), cities.get(j).getKey());
+                    }
+                }
             }
-        }
-        double shortest= Double.MAX_VALUE, curr=0;
-        int [] ans = new int[cities.size()];
-        int [] Per = new int[cities.size()];
-        ArrayList <int[]> permuted= new ArrayList<>();
-        //init both arrays to be the indexes of the original list
-        for(int i = 0 ;i < cities.size();i++ )
-        {
-            ans[i]=i;
-            Per[i]=i;
-        }
-        //save all the permutaions of the array per into permuted list
-        Permutations(permuted,Per,Per.length);
-        //go over al the permuted arrays
-        for(int i=0;i < permuted.size() ; i++)
-        {
-            Per=permuted.get(i);
-            //compute the path dist between all of the nodes in the array
-            for(int j= 0 ; j < cities.size()-1 ; j++){
-                curr+=arr[Per[j]][Per[j+1]];
+            double shortest = Double.MAX_VALUE, curr = 0;
+            int[] ans = new int[cities.size()];
+            int[] Per = new int[cities.size()];
+            ArrayList<int[]> permuted = new ArrayList<>();
+            //init both arrays to be the indexes of the original list
+            for (int i = 0; i < cities.size(); i++) {
+                ans[i] = i;
+                Per[i] = i;
             }
-            //check if the current array generated the shortest path
-            if(curr<shortest){
-                shortest=curr;
-                ans=Per;
+            //save all the permutaions of the array per into permuted list
+            Permutations(permuted, Per, Per.length);
+            //go over al the permuted arrays
+            for (int i = 0; i < permuted.size(); i++) {
+                Per = permuted.get(i);
+                //compute the path dist between all of the nodes in the array
+                for (int j = 0; j < cities.size() - 1; j++) {
+                    curr += arr[Per[j]][Per[j + 1]];
+                }
+                //check if the current array generated the shortest path
+                if (curr < shortest) {
+                    shortest = curr;
+                    ans = Per;
+                }
             }
+            List<NodeData> end = new ArrayList<>();
+            //put all the elements from the ans array (and the nodes we need to go through between them) to the end list
+            for (int i = 0; i < ans.length - 1; i++) {
+                end.addAll(shortestPath(ans[i], ans[i + 1]));
+            }
+            return end;
         }
-        List<NodeData> end = new ArrayList<>();
-        //put all the elements from the ans array (and the nodes we need to go through between them) to the end list
-        for (int i=0;i<ans.length-1;i++){
-            end.addAll(shortestPath(ans[i],ans[i+1]));
+        List <NodeData> end = new ArrayList<>();
+        double min = Double.MAX_VALUE;
+        int minIndex = 0;
+        NodeData lastNode = cities.remove(0), minNode = cities.get(0);
+        end.add(lastNode);
+        while(!cities.isEmpty()){
+            for(int i = 0; i< cities.size();i++){
+                NodeData curr = cities.get(i);
+                double dist = shortestPathDist(lastNode.getKey(), curr.getKey());
+                if(dist<min){
+                    minNode = curr;
+                    min = dist;
+                    minIndex = i;
+                }
+            }
+            lastNode = minNode;
+            end.add(cities.remove(minIndex));
+            min = Double.MAX_VALUE;
         }
         return end;
     }
-
-    @Override
-    public boolean save(String file) {
-        try {
-            Gson gson = new Gson();
-            Writer writer = new FileWriter(file);
-            gson.toJson(this.Graph, writer);
-            writer.close();
-            return true;
-        }
-        catch (Exception a)
-        {
-            return false;
-        }
-    }
-
     @Override
     public boolean load(String file) {
         try {
