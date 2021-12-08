@@ -1,14 +1,11 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import org.w3c.dom.Node;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.Array;
+import java.util.*;
 
 public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedGraphAlgorithms {
     private  My_DirectedWeightedGraphImpl Graph ;
@@ -86,47 +83,88 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         }
         return count;
     }
-        public int check(double arr[][] ,int i ,int k, double x )
-        {
-            for(int j=0;j<this.Graph.nodeSize();j++){
-                if(this.Graph.getEdge(j,k)==null)
-                    continue;;
-                if(this.Graph.getEdge(j,k).getWeight()+arr[i][j]==x)
-                    return j;
-            }
-            return arr.length-1;
-        }
-        public  List<NodeData> getShortestPathTo(int src,int dest) {
+
+    public  List<NodeData> getShortestPathTo(int src,int dest) {
         int size = this.Graph.nodeSize();
-        double [] [] ans = new double[size][size];
-        for(int i = 0 ; i < size ; i ++){
-                for(int j=0 ; j < size ; j++){
-                    if(i==0||i==j || this.getGraph().getEdge(i,j)==null)
-                    ans[i][j]=Double.MAX_VALUE;
-                    else
-                    ans[i][j]=this.getGraph().getEdge(i,j).getWeight();
-                }
-
+        Iterator<NodeData> it = this.Graph.nodeIter();
+        NodeData [] cols = new NodeData[size];
+        NodeData [] rows = new NodeData[size];
+        cols[0] = this.Graph.getNode(src);
+        int n=1;
+        while(it.hasNext()){
+            NodeData curr = it.next();
+            if(curr.getKey() != src) {
+                cols[n] = curr;
+                n++;
+            }
         }
-            for(int k = 0; k<size ; k++) {
-                for (int i = 0; i < size; i++) {
-                    for (int j = 0; j < size; j++) {
-                        if(ans[i][j]>ans[i][k]+ans[k][j])
-                            ans[i][j]=ans[i][k]+ans[k][j];
-                    }
-
+        double[][] ans = new double[size][size];
+        ans[0][0] = 0;
+        rows[0] = Graph.getNode(src);
+        double min = Double.MAX_VALUE;
+        int minIndex = 0, lastMinIndex=0;
+        int inf;
+        for(int i=1;i<size;i++){
+            ans[0][i] = Double.MAX_VALUE;
+            ans[i][0] = Double.MAX_VALUE;
+        }
+        for (int i = 1; i < size; i++) {
+            for (int j = 1; j < size; j++) {
+                if(this.Graph.getEdge(rows[i-1].getKey(),cols[j].getKey())!=null && ans[i][j] < Double.MAX_VALUE ) {
+                    ans[i][j] = Math.min(Graph.getEdge(rows[i - 1].getKey(), cols[j].getKey()).getWeight()+ans[i-1][lastMinIndex], ans[i - 1][j]);
+                }else{
+                    ans[i][j] = ans[i-1][j];
                 }
             }
-            List <NodeData> result = new LinkedList<>();
+            for(int j=1; j<size;j++){
+                if (ans[i][j] < min) {
+                    min = ans[i][j];
+                    rows[i] = cols[j];
+                    minIndex = j;
+                }
+            }
+            lastMinIndex = minIndex;
+            inf = i+1;
+            for(int l = inf; l<size;l++){
+                ans[l][minIndex] = Double.MAX_VALUE;
+            }
+            min = Double.MAX_VALUE;
+        }
 
-            int temp = dest;
-                    for(int i = size-1 ; i > 0 ; i--){
-                        if(ans[i][temp]!=ans[i-1][temp])
-                            temp = check(ans,i,temp,ans[i][temp]);
-                            result.add(this.Graph.getNode(temp));
-                        }
-                    Collections.reverse(result);
-           return result;
+        int colDest = 0, rowDest = 0;
+        List<NodeData> result = new LinkedList<>();
+        result.add(Graph.getNode(dest));
+        for(int i=0;i< rows.length;i++){
+            if(rows[i].getKey() == dest){
+                rowDest = i;
+            }
+        }
+        for(int i= 0; i< cols.length;i++){
+            if(cols[i].getKey() == dest){
+                colDest = i;
+                break;
+            }
+        }
+        int i = rowDest;
+        int j = colDest;
+        while(i>0){
+            if(ans[i][j] == ans[i-1][j]){
+                i--;
+            }
+            else{
+                i--;
+                min = Double.MAX_VALUE;
+                for(int k=1;k<size;k++){
+                    if(ans[i][k]<min && Graph.getEdge(cols[k].getKey(),result.get(0).getKey())!=null){
+                        min = ans[i][k];
+                        j=k;
+                    }
+                }
+                result.add(0,rows[i]);
+            }
+        }
+        return result;
+    }
 
     @Override
     public double shortestPathDist(int src, int dest) {
@@ -150,11 +188,14 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {//inspired by stackbuse.com/graphs-in-java-dijkstras-algorithms/
-      return getShortestPathTo(src,dest);
+        return getShortestPathTo(src,dest);
     }
 
-    }    @Override
+    @Override
     public NodeData center() {
+        if(!isConnected()){
+            return null;
+        }
         int size = this.Graph.getNodes().size();
         double min =  Double.MAX_VALUE;
         double [][] matrix = new double[size][size];
@@ -164,10 +205,10 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         {
             for(int j=0;j<size;j++) {
                 if(i==j)
-                    matrix[i][j]=Integer.MAX_VALUE;
-                matrix[i][j]=shortestPathDist(i,j);
+                    matrix[i][j]=Double.MAX_VALUE;
+                else
+                    matrix[i][j]=shortestPathDist(i,j);
             }
-
         }
 
         for (int i=0 ; i <size ;i++)
@@ -175,17 +216,14 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
             for(int j=0;j<size;j++) {
                 if(i==j)
                     continue;
-
                 if(maxrow<matrix[i][j])
                     maxrow=matrix[i][j];
             }
-
             if(maxmin>maxrow) {
                 maxmin = maxrow;
                 ans=this.Graph.getNode(i);
             }
         }
-
         return ans;
     }
 
@@ -194,7 +232,6 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         int Temp = a[i];
         a[i] = a[k];
         a[k] = Temp;
-
     }
     //heap's algorithm
     private void Permutations(ArrayList<int[]> ans, int [] a, int k)
@@ -267,7 +304,6 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         return end;
     }
 
-
     @Override
     public boolean save(String file) {
         try {
@@ -283,9 +319,10 @@ public class My_DirectedWeightedGraphAlgorithmsImpl implements DirectedWeightedG
         }
     }
 
-     @Override
+    @Override
     public boolean load(String file) {
         try {
+            this.Graph = new My_DirectedWeightedGraphImpl();
             Gson gson = new Gson();
             FileReader reader =new FileReader(file);
             JsonElement h = gson.fromJson(reader, JsonElement.class);
