@@ -6,13 +6,16 @@
 - For the nodes we created a hashmap that it's keys are node.key() and it's values are NodeData. 
 - We also added a hashmap for all the edges that it's keys are a String "src,dest" and it's values are EdgeData.
 
+## Class diagram
+![My_DirectedWeightedGraphAlgorithmsImpl](https://user-images.githubusercontent.com/85555432/145365136-9dc0fa1d-2f4d-48d4-8e11-2f130b43eef2.png)
+
 ## running the algorithms
 ### 1000 nodes
-- isConnected:
-- shortestPath:
-- shortestPathDist:
-- center:
-- dfs:
+- isConnected: 31 ms
+- shortestPath: 94 ms
+- shortestPathDist: 47 ms
+- center: timeout
+- dfs: 594 ms
 ### 10000 nodes:
 - isConnected: timeout
 - shortestPath: 3359 ms
@@ -25,3 +28,4 @@
 - shortestPathDist: out of memory
 - center: timeout
 - dfs: out of memory
+
