@@ -1,4 +1,5 @@
 # Directed Weighted Graph
+This project is a oop java project that presents a GUI of a directed weighted graph. This project implements algorithms and manipulation on a graph.
 ## Planning
 - First we examined the interfaces and the functions inside them in order to understand what we are required to do.
 - Then we tried to think what are the best data stractures to use in this program. Because we need to add and remove in O(1) we desided to use hashmaps.
