@@ -5,6 +5,10 @@
 - Because we need to access each edge both by it's source and it's destination we desided to make 2 hashmaps, one that it's keys are sources and one that it's keys are destinations.
 - For the nodes we created a hashmap that it's keys are node.key() and it's values are NodeData. 
 - We also added a hashmap for all the edges that it's keys are a String "src,dest" and it's values are EdgeData.
+### Tests
+- the classes EdgeData, NodeData and GeoLocation has only basic functions so we'll make basic tests that only check correctness.
+- for DirectedWeightedGragh we'll make both tests that check correctness and perfomance.
+- for DirectedWeightedGraghAlgorithms we'll make complicated tests that check all the edge cases. 
 
 ## Class diagram
 ![My_DirectedWeightedGraphAlgorithmsImpl](https://user-images.githubusercontent.com/85555432/145365136-9dc0fa1d-2f4d-48d4-8e11-2f130b43eef2.png)
