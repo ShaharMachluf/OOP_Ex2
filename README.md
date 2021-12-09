@@ -32,4 +32,8 @@
 - shortestPathDist: out of memory
 - center: timeout
 - dfs: out of memory
+## How to execute
+- download the jar file Ex2.jar
+- open cmd
+- write "java -jar Ex2.jar <json file name>
 
