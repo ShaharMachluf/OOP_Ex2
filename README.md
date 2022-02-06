@@ -36,5 +36,5 @@ This project is a oop java project that presents a GUI of a directed weighted gr
 ## How to execute
 - download the jar file Ex2.jar
 - open cmd
-- write "java -jar Ex2.jar <json file name>
+- write "java -jar Ex2.jar <json file name>"
 
