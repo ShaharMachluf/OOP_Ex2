@@ -13,6 +13,12 @@ This project is a oop java project that presents a GUI of a directed weighted gr
 
 ## Class diagram
 ![My_DirectedWeightedGraphAlgorithmsImpl](https://user-images.githubusercontent.com/85555432/145365136-9dc0fa1d-2f4d-48d4-8e11-2f130b43eef2.png)
+### Main Classes
+- "My_GeoLocation" is used to mark the location of a node on the screen.
+- "My_NodeData" and "My_EdgeDataImpl" are used to represent nodes and edges in th graph.
+- "My_DirectedWeightedGraphImpl" is used to do manipulations on the graph (add node, remove node, etc.)
+- "My_DirectedWieghtedGraphAlgorithmsImpl" is used to load a graph from a json file, save graph to a json file and running algorithms on the graph (center, shortest path, tsp, etc.)
+- "PaintPannel" is used to display the graph on the screen. 
 
 ## running the algorithms
 ### 1000 nodes
